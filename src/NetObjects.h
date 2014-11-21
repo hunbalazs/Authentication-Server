@@ -1,9 +1,9 @@
 #ifndef TR_NET_OBJECTS_H
 #define TR_NET_OBJECTS_H
 
-typedef unsigned int	TR_DWORD;
-typedef unsigned short	TR_WORD;
-typedef unsigned char	TR_BYTE;
+typedef uint32_t	TR_DWORD;
+typedef uint16_t	TR_WORD;
+typedef uint8_t 	TR_BYTE;
 
 namespace AuthError
 {

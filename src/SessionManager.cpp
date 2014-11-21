@@ -7,33 +7,30 @@ SessionManager* SessionManager::Instance()
 	return SessionManager::Pointer;
 }
 
-SessionManager* SessionManager::Create(unsigned int SessionTimeout, unsigned int ServerTimeout)
+SessionManager* SessionManager::Create(uint32_t SessionTimeout, uint32_t ServerTimeout)
 {
 	if (SessionManager::Pointer == 0)
-	{
 		SessionManager::Pointer = new SessionManager(SessionTimeout, ServerTimeout);
-	}
 	return SessionManager::Pointer;
 }
 
-SessionManager::SessionManager(unsigned int SessionTimeout, unsigned int ServerTimeout)
+SessionManager::SessionManager(uint32_t SessionTimeout, uint32_t ServerTimeout)
 {
 	this->SessionTimeout = SessionTimeout;
 	this->ServerTimeout = ServerTimeout;
 }
 
-SessionManager::~SessionManager()
-{
-}
+SessionManager::~SessionManager() {}
 
-unsigned long long SessionManager::GenerateSession(const char* AccountName, signed long long UID)
+uint64_t SessionManager::GenerateSession(const char* AccountName, uint64_t UID)
 {
-	unsigned long long SessionID;
-	unsigned int SessionID1;
-	unsigned int SessionID2;
+    DBManager::Instance()->lock();
+	uint64_t SessionID;
+	uint32_t SessionID1;
+	uint32_t SessionID2;
 	SessionID = GenerateUniqueKey();
-	SessionID1 = (unsigned int)(SessionID & 0xFFFFFFFF);
-	SessionID2 = (unsigned int)(SessionID >> 32);
+	SessionID1 = (uint32_t)(SessionID & 0xFFFFFFFF);
+	SessionID2 = (uint32_t)(SessionID >> 32);
 	std::stringstream converter;
 	std::stringstream query;
 	std::string sSessionID1;
@@ -49,21 +46,22 @@ unsigned long long SessionManager::GenerateSession(const char* AccountName, sign
 	query << "'" << std::string(AccountName) << "',";
 	query << "NULL" << ")";
 	DBManager::Instance()->Query(query.str().c_str());
+    DBManager::Instance()->unlock();
 	// ToDo: Error Checking
 	return SessionID;
 }
 
-unsigned long long SessionManager::GenerateUniqueKey()
+uint64_t SessionManager::GenerateUniqueKey()
 {
-	unsigned long long Key;
+	uint64_t Key;
 	
-	unsigned int GenTime = Thread::GetTicks();
+	uint32_t GenTime = Thread::GetTicks();
 	Key = rand() + GenTime;
-	for (int i=0; i<30; i++)
+	for (int i = 0; i < 30; i++)
 	{
 		Key = (Key<<2) | (Key>>62);
 		Key += rand();
-		Key += GenTime / (i+1);
+		Key += GenTime / (i + 1);
 	}
 
 	return Key;
@@ -71,16 +69,16 @@ unsigned long long SessionManager::GenerateUniqueKey()
 
 void SessionManager::WipeSessions()
 {
-	Thread::LockMutex();
+	DBManager::Instance()->lock();
 	DBManager::Instance()->Query("DELETE FROM sessions");
-	Thread::UnlockMutex();
+	DBManager::Instance()->unlock();
 }
 
 void SessionManager::WipeServers()
 {
-	Thread::LockMutex();
+	DBManager::Instance()->lock();
 	DBManager::Instance()->Query("DELETE FROM game_servers WHERE static='0'");
-	Thread::UnlockMutex();
+	DBManager::Instance()->unlock();
 }
 
 void SessionManager::RemoveExpiredSessions()
@@ -92,9 +90,9 @@ void SessionManager::RemoveExpiredSessions()
 	std::string Query = std::string("");
 	Query += "DELETE FROM sessions WHERE (TIMESTAMPDIFF(SECOND, checktime,CURRENT_TIMESTAMP())) > ";
 	Query += Timeout;
-	Thread::LockMutex();
+	DBManager::Instance()->lock();
 	DBManager::Instance()->Query(Query.c_str());
-	Thread::UnlockMutex();
+	DBManager::Instance()->unlock();
 }
 
 void SessionManager::RemoveExpiredServers()
@@ -107,9 +105,9 @@ void SessionManager::RemoveExpiredServers()
 	Query += "DELETE FROM game_servers WHERE (TIMESTAMPDIFF(SECOND, check_time, CURRENT_TIMESTAMP())) > ";
 	Query += Timeout;
 	Query += " AND static='0'";
-	Thread::LockMutex();
+	DBManager::Instance()->lock();
 	DBManager::Instance()->Query(Query.c_str());
-	Thread::UnlockMutex();
+	DBManager::Instance()->unlock();
 }
 
 // DELETE FROM sessions WHERE checktime > (CURRENT_TIMESTAMP() - 50)

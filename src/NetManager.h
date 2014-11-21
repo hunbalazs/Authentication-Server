@@ -10,7 +10,7 @@
 	#include <netinet/in.h>
 	
 	#define SOCKET_ERROR -1
-	typedef unsigned int SOCKET;
+	typedef int32_t SOCKET;
 	typedef sockaddr_in SOCKADDR_IN;
 	typedef sockaddr SOCKADDR;
 	typedef fd_set FD_SET;
@@ -23,19 +23,19 @@
 class NetManager
 {
 	public:
-		NetManager(unsigned int Port);
+		NetManager(uint16_t Port);
 		~NetManager();
 
 		void ResetFD();
 		SOCKET WaitForClient();
 
 	private:
-		unsigned int Port;
+		uint16_t Port;
 		SOCKET Socket;
 		FD_SET fd;
 		timeval Timeout;
 
-		SOCKET CreateSocket(unsigned short Port);
+		SOCKET CreateSocket(uint16_t Port);
 
 };
 

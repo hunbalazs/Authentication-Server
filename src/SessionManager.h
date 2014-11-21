@@ -19,26 +19,26 @@ class SessionManager
 {
 	public:
 		static SessionManager* Instance();
-		static SessionManager* Create(unsigned int SessionTimeout, unsigned int ServerTimeout);
+		static SessionManager* Create(uint32_t SessionTimeout, uint32_t ServerTimeout);
 		
 		~SessionManager();
 
-		unsigned long long GenerateSession(const char* AccountName, signed long long UID);
+		uint64_t GenerateSession(const char* AccountName, uint64_t UID);
 		void WipeSessions();
 		void WipeServers();
 		void RemoveExpiredSessions();
 		void RemoveExpiredServers();
 
-		unsigned int SessionTimeout;
-		unsigned int ServerTimeout;
+		uint32_t SessionTimeout;
+		uint32_t ServerTimeout;
 
 	protected:
-		SessionManager(unsigned int SessionTimeout, unsigned int ServerTimeout);
+		SessionManager(uint32_t SessionTimeout, uint32_t ServerTimeout);
 
 	private:
 		static SessionManager* Pointer;
 
-		unsigned long long GenerateUniqueKey();
+		uint64_t GenerateUniqueKey();
 };
 
 #endif

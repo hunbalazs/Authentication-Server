@@ -18,17 +18,17 @@ bool INIParser::GetBool(const char* Section, const char* Key, bool Default)
 {
 	int def = Default == 1 ? true : false;
 	int ret = ini_getbool(Section, Key, def, this->File.c_str());
-	bool ret2= ret == 1 ? true : false;
+	bool ret2 = ret == 1 ? true : false;
 	return ret2;
 }
 
-int INIParser::GetInt(const char* Section, const char* Key, int Default)
+uint32_t INIParser::GetInt(const char* Section, const char* Key, uint32_t Default)
 {
 	long ret = ini_getl(Section, Key, (long) Default, this->File.c_str());
 	return (int)ret;
 }
 
-long INIParser::GetLong(const char* Section, const char* Key, long Default)
+uint64_t INIParser::GetLong(const char* Section, const char* Key, uint64_t Default)
 {
 	long ret = ini_getl(Section, Key, Default, this->File.c_str());
 	return ret;

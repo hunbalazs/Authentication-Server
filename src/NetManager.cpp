@@ -1,7 +1,7 @@
 #include "NetManager.h"
 
 
-NetManager::NetManager(unsigned int Port)
+NetManager::NetManager(uint16_t Port)
 {
 	this->Port = Port;
 	this->Timeout.tv_sec = 1;
@@ -10,14 +10,11 @@ NetManager::NetManager(unsigned int Port)
 	if (this->Socket == SOCKET_ERROR)
 	{
 		printf("Error: Could not open communication port\n");
-		Thread::Wait(10*1000);
+		throw("NetManager: server port in use or access denied");
 	}
 }
 
-NetManager::~NetManager()
-{
-
-}
+NetManager::~NetManager() {}
 
 void NetManager::ResetFD()
 {
@@ -27,7 +24,10 @@ void NetManager::ResetFD()
 
 SOCKET NetManager::WaitForClient()
 {
+	SOCKET ret = (SOCKET)accept(this->Socket, 0, 0);
+	return ret;
 	// ToDo: Use just accept()
+    /*
 	int r = select(0, &this->fd, NULL, NULL, &this->Timeout);
 	if (r && r != SOCKET_ERROR)
 	{
@@ -38,16 +38,17 @@ SOCKET NetManager::WaitForClient()
 		}
 	}
 	return -1;
+    */
 }
 
-SOCKET NetManager::CreateSocket(unsigned short Port)
+SOCKET NetManager::CreateSocket(uint16_t Port)
 {
 	SOCKET s = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
 	SOCKADDR_IN addr;
 	memset(&addr, 0, sizeof(SOCKADDR_IN));
 	addr.sin_family = AF_INET;
 	addr.sin_port = htons(Port);
-	addr.sin_addr.s_addr = 0;//ADDR_ANY;
+	addr.sin_addr.s_addr = 0; //ADDR_ANY;
 	if( bind(s, (SOCKADDR*)&addr, sizeof(SOCKADDR_IN)) == SOCKET_ERROR )
 	{
 		Net::Close(s);

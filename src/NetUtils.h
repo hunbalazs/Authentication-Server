@@ -12,7 +12,7 @@
 	#include <unistd.h>
 	
 	#define SOCKET_ERROR -1
-	typedef unsigned int SOCKET;
+	typedef int32_t SOCKET;
 	typedef sockaddr_in SOCKADDR_IN;
 #endif
 #include "CryptManager.h"
@@ -23,7 +23,7 @@
 		unsigned char RecvBuffer[128]; // No packet from client is ever bigger than this
 		char Account[14];
 		char Password[16];
-		signed long long AccUID;
+		uint64_t AccUID;
 	};
 
 namespace Net
@@ -33,9 +33,9 @@ namespace Net
 	int Receive(SOCKET s, char* buff, int len, bool clear=false, int size=128);
 	void SetTimeout(SOCKET s, int time);
 	void Close(SOCKET s);
-	unsigned int NumericIP(SOCKET s);
-	void PrintIP(unsigned int IP);
-	unsigned int IPtoHex(char* ip);
+	uint32_t NumericIP(SOCKET s);
+	void PrintIP(uint32_t IP);
+	uint32_t IPtoHex(char* ip);
 }
 
 #endif

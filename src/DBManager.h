@@ -3,6 +3,7 @@
 
 #include <stdio.h>
 #include <string>
+#include <mutex>
 #ifdef _WIN32
 	#include <windows.h>
 #else
@@ -16,7 +17,7 @@ class DBManager
 {
 	public:
 		static DBManager* Instance();
-		static DBManager* Create(const char* dbHost, unsigned int dbPort, const char* dbUser, const char* dbPass, const char* dbName);
+		static DBManager* Create(const char* dbHost, uint32_t dbPort, const char* dbUser, const char* dbPass, const char* dbName);
 		
 		~DBManager();
 
@@ -25,20 +26,23 @@ class DBManager
 		int NumRows(MYSQL_RES* result);
 		MYSQL_ROW FetchRow(MYSQL_RES* result);
 		void FreeResult(MYSQL_RES* result);
-		int ValidatePlayer(const char* Name, const char* Password, signed long long* UID);
+		int ValidatePlayer(const char* Name, const char* Password, uint64_t* UID);
+        void lock();
+        void unlock();
 
 	protected:
-		DBManager(const char* dbHost, unsigned int dbPort, const char* dbUser, const char* dbPass, const char* dbName);
+		DBManager(const char* dbHost, uint32_t dbPort, const char* dbUser, const char* dbPass, const char* dbName);
 
 	private:
 		static DBManager* Pointer;
 
-		MYSQL*				dbHandle;
-		std::string			dbHost;
-		unsigned int		dbPort;
-		std::string			dbUser;
-		std::string			dbName;
-		std::string			dbPass;
-		std::string			UsersTable;
+		MYSQL*		dbHandle;
+		std::string	dbHost;
+		uint32_t	dbPort;
+		std::string	dbUser;
+		std::string	dbName;
+		std::string	dbPass;
+		std::string	UsersTable;
+        std::mutex  dbMutex;
 };
 #endif
