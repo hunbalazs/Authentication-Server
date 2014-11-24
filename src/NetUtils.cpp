@@ -2,10 +2,13 @@
 
 void Net::SendEncrypted(SOCKET s, const char* buff, int len)
 {
-    char buffer[128];
+    char buffer[128] = {0};
     int length = len;
-    memcpy((void*)&buffer,(void*)buff, len);
+    memcpy(buffer, buff, len);
     // Align to 8 bytes
+    // it doesnt align to 8 bytes
+    // if length = 40
+    // 40 -> 42, 42 % 8 != 0
     length = length + ((8-((length-2)%8))%8);
     // Calculate checksum
     uint64_t CS = 0;
@@ -21,7 +24,7 @@ void Net::SendEncrypted(SOCKET s, const char* buff, int len)
     *(uint16_t*)buffer = length;
     // Encrypt it
     for(int p = 0; p < (length - 2) / 8; ++p)
-        CryptManager::Instance()->BFEncrypt((uint64_t*)&buffer[p * 8 + 2], (uint64_t*)&buffer[6 + p * 8]);
+        CryptManager::Instance()->BFEncrypt((uint64_t*)&buffer[p * 8 + 2], (uint64_t*)&buffer[2 + p * 8]);
     send(s, buffer, length, 0);
 }
 

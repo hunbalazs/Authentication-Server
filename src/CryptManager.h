@@ -18,8 +18,8 @@
 // Blowfish struct
 struct BLOWFISH_CTX 
 {
-    uint64_t P[16 + 2];
-    uint64_t S[4][256];
+    uint32_t P[16 + 2];
+    uint32_t S[4][256];
 };
 
 
@@ -44,8 +44,8 @@ class CryptManager
 	// Blowfish data
 	static const uint8_t	sdata[];
 	static const uint8_t	BF_PTransformed[4*18];
-	static const uint64_t	ORIG_P[16 + 2];
-	static const uint64_t	ORIG_S[4][256];
+	//static const uint64_t	ORIG_P[16 + 2];
+	//static const uint64_t	ORIG_S[4][256];
 
 	// TR Data
 	static const uint8_t	DecArray1[0x38];
@@ -73,8 +73,8 @@ class CryptManager
 
 		// Blowfish functions
 		void BFInit();
-		void BFDecrypt(uint64_t *xl, uint64_t *xr);
-		void BFEncrypt(uint64_t *xl, uint64_t *xr);
+		void BFDecrypt(uint64_t *x, uint64_t *out);
+		void BFEncrypt(uint64_t *x, uint64_t *out);
 
 		// TR functions
 		void TRInit();
@@ -96,7 +96,7 @@ class CryptManager
 		BLOWFISH_CTX BlowfishContext;
 
 		// Blowfish functions
-		uint64_t F(uint64_t x);
+		uint32_t F(uint32_t x);
 
 		// TR structs
 		_DecStruct1T	DecStruct1[16];
@@ -109,13 +109,13 @@ class CryptManager
 		void            TRKeyIntegrate2();
 		void            TRKeyIntegrate3();
 
-		int32_t 		sub_A7D470(int32_t a1, int32_t a2);
+		uint32_t 		sub_A7D470(uint32_t a1, uint32_t a2);
 		void 			sub_A7D8D0_3(const uint8_t *DataP, uint8_t *B_, uint8_t *Out);
 		void	 		sub_A7D790(uint8_t *a1, uint8_t *a2);
 		void 			sub_A7D4B0(uint8_t *a1, uint8_t *a2);
 		void 			sub_A7D5E0_5(uint8_t *p1, uint8_t *p2);
-		void	 		sub_A7DA60_4(uint8_t *d, int32_t idx, uint8_t *a3);
-		void 			sub_A7DC90_3(int32_t idx, uint8_t *m, uint8_t *m2);
+		void	 		sub_A7DA60_4(uint8_t *d, int idx, uint8_t *a3);
+		void 			sub_A7DC90_3(int idx, uint8_t *m, uint8_t *m2);
 		void			sub_A7DE00_2(uint8_t *DataP1, uint8_t *DataP2);
 		void 			sub_A7DFD0(uint8_t *a1, uint8_t *a2);
 		void 			sub_A7E190_1(uint8_t *Data, uint32_t Len, bool State);

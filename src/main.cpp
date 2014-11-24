@@ -60,7 +60,7 @@ int main(int argc, char *argv[])
 	printf("Database Name: %s\r\n\r\n", dbname.c_str());
 	printf("Database User: %s\r\n", dbuser.c_str());
 	printf("Database Pass: %s\r\n", dbpass.c_str());
-	
+
 	printf("Loading Database Manager...");
 	DBManager::Create(dbhost.c_str(), dbport, dbuser.c_str(), dbpass.c_str(), dbname.c_str());
 	printf("Done\r\n");
@@ -84,12 +84,12 @@ int main(int argc, char *argv[])
 
 	printf("Creating Threads...");
 
-    std::thread playersThread{PlayersThread};   // start player handling thread
-    std::thread maintThread{MaintenanceThread}; // start maintenance thread
-    // TODO: handle error with try catch
+	std::thread playersThread{PlayersThread};   // start player handling thread
+	std::thread maintThread{MaintenanceThread}; // start maintenance thread
+	// TODO: handle error with try catch
 
-    printf("Done\r\n\r\n");
-    printf("Authentication Server running\r\n");
+	printf("Done\r\n\r\n");
+	printf("Authentication Server running\r\n");
 	
 	if (argc == 2 && !strcmp(argv[1], "-hidden"))
 	{
@@ -98,6 +98,7 @@ int main(int argc, char *argv[])
 		HWND hWnd = GetConsoleWindow();
 		ShowWindow(hWnd, SW_HIDE);
 #else
+		// TODO: daemonize
 		printf("Hidden mode not supported on this OS\r\n");
 #endif
 	}
@@ -109,7 +110,7 @@ int main(int argc, char *argv[])
 			ServerRunning = false;
 	}
 	printf("Finishing threads...");
-    maintThread.join();
+	maintThread.join();
 	playersThread.join();
 	printf("Done\r\n");
 	printf("Exiting Server...");
@@ -131,17 +132,17 @@ void PlayersThread()
 			printf("\r\n");
 			if (ActiveConns < MaxClients)
 			{
-                ++ActiveConns;
-                try
-                {
-                    std::thread clientThread{PlayerHandling, NewClient};
-                    clientThread.detach(); // we should put it in a list or something
-                }
-                catch(...)
-                {
-                    printf("Error creating Thread for player handling\r\n");
+				++ActiveConns;
+				try
+				{
+					std::thread clientThread{PlayerHandling, NewClient};
+					clientThread.detach(); // we should put it in a list or something
+				}
+				catch(...)
+				{
+					printf("Error creating Thread for player handling\r\n");
 					Net::Close(NewClient);
-                }
+				}
 			}
 			else
 			{
@@ -179,7 +180,7 @@ void PlayerHandling(SOCKET Parameter)
     }
 	HandleMessage::AuthLoginOk(&player);
 	// This part is the <different packets allowed>
-	uint32_t start = Thread::GetTicks();
+	uint64_t start = Thread::GetTicks();
 	uint8_t ServerID;
 	while(true)
 	{ 
@@ -203,7 +204,7 @@ void PlayerHandling(SOCKET Parameter)
 			for(int i = 0; i < (0x1A - 2) / 8; i++)
 			{
 				CryptManager::Instance()->BFDecrypt((uint64_t*)&player.RecvBuffer[2+i*8], 
-								 (uint64_t*)&player.RecvBuffer[2+i*8+4]);
+								 (uint64_t*)&player.RecvBuffer[2+i*8]);
 			}
 			if (player.RecvBuffer[2] == OPCode::AuthRSL)
 			{

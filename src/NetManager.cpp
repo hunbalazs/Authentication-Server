@@ -44,6 +44,8 @@ SOCKET NetManager::WaitForClient()
 SOCKET NetManager::CreateSocket(uint16_t Port)
 {
 	SOCKET s = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
+    int so_reuse = 1;
+    setsockopt(s, SOL_SOCKET, SO_REUSEADDR, &so_reuse, sizeof(so_reuse));
 	SOCKADDR_IN addr;
 	memset(&addr, 0, sizeof(SOCKADDR_IN));
 	addr.sin_family = AF_INET;

@@ -40,7 +40,7 @@ bool HandleMessage::AuthLogin(Player* player)
 	for(int i = 0; i < (0x32 - 2) / 8; i++)
 	{
 		CryptManager::Instance()->BFDecrypt((uint64_t*)&player->RecvBuffer[2+i*8], 
-						 (uint64_t*)&player->RecvBuffer[2+i*8+4]);
+						 (uint64_t*)&player->RecvBuffer[2+i*8]);
 	}
 
 	Packet::AuthLogin packet;
